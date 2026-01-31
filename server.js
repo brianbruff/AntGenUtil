@@ -266,7 +266,20 @@ udpServer.on('message', (msg, rinfo) => {
   if (device) {
     device.lastSeen = Date.now();
     console.log(`Discovered: ${device.name} (${device.ip})`);
+    const isNew = !discoveredDevices.has(device.ip);
     discoveredDevices.set(device.ip, device);
+    
+    if (isNew && discoveredDevices.size === 1) {
+      console.log(`Auto-connecting to single discovered device: ${device.name}`);
+      setTimeout(() => {
+        io.sockets.emit('devices', Array.from(discoveredDevices.values()));
+        const firstSocket = Array.from(io.sockets.sockets.values())[0];
+        if (firstSocket) {
+          connectToDevice(device.ip, firstSocket);
+        }
+      }, 500);
+    }
+    
     io.emit('device_discovered', device);
   }
 });
