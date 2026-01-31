@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  antenna-genius:
+    build: .
+    container_name: antenna-genius-controller
+    ports:
+      - "3000:3000"
+      - "9007:9007/udp"
+    restart: unless-stopped
+    network_mode: host

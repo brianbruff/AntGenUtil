@@ -1,0 +1,19 @@
+{
+  "name": "antenna-genius-web",
+  "version": "1.0.0",
+  "description": "Web application to discover and control 4O3A Antenna Genius",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.1",
+    "playwright": "^1.58.1"
+  }
+}
