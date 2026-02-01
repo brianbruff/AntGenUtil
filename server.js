@@ -51,6 +51,14 @@ io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
   socket.emit('devices', Array.from(discoveredDevices.values()));
   
+  // Auto-connect if only one device exists
+  if (discoveredDevices.size === 1) {
+    const deviceIp = Array.from(discoveredDevices.keys())[0];
+    const device = discoveredDevices.get(deviceIp);
+    console.log(`Auto-connecting to single device: ${device.name}`);
+    setTimeout(() => connectToDevice(deviceIp, socket), 500);
+  }
+  
   socket.on('connect_device', async (ip) => {
     console.log(`Connect device requested: ${ip}`);
     await connectToDevice(ip, socket);
@@ -83,18 +91,27 @@ async function connectToDevice(ip, socket) {
     if (conn && conn.client && conn.client.destroyed) {
       console.log(`  Existing connection destroyed, removing`);
       tcpConnections.delete(ip);
+    } else if (conn.initialized) {
+      // Already initialized, send current state to new socket
+      console.log(`  Device ${ip} already initialized, sending current state`);
+      socket.emit('device_connected', { ip, status: 'connected' });
+      // Send antenna list (need to get it from discoveredDevices cache or re-fetch)
+      // For now, just let frontend handle the connected state
+      return;
     } else {
-      socket.emit('device_connected', { ip, status: 'already_connected' });
+      // Still initializing
+      console.log(`  Device ${ip} still initializing`);
       return;
     }
   }
 
   const client = new net.Socket();
+  let antennaCount = 0;
   
   client.on('connect', () => {
     console.log(`  TCP connected to ${ip}`);
-    tcpConnections.set(ip, { client, socket });
-    socket.emit('device_connected', { ip, status: 'connected' });
+    antennaCount = 0;
+    tcpConnections.set(ip, { client, socket, initialized: false, antennaCount: 0 });
   });
 
   client.on('data', (data) => {
@@ -186,15 +203,29 @@ function handleCommandResponse(ip, line, socket) {
     const antennaMatch = message.match(/antenna (\d+) name=([^\s]+) tx=([^\s]+) rx=([^\s]+)/);
     if (antennaMatch) {
       console.log(`  Parsed antenna: id=${antennaMatch[1]}, name=${antennaMatch[2]}`);
-      socket.emit('antenna_info', {
+      // Broadcast to all clients
+      io.emit('antenna_info', {
         ip,
         id: parseInt(antennaMatch[1]),
         name: antennaMatch[2].replace(/_/g, ' '),
         tx: antennaMatch[3],
         rx: antennaMatch[4]
       });
+      const conn = tcpConnections.get(ip);
+      if (conn) {
+        conn.antennaCount = (conn.antennaCount || 0) + 1;
+      }
     } else {
       console.log(`  Failed to match antenna regex for: ${message}`);
+    }
+  } else if (message === '') {
+    // Empty response marks end of a multi-line response
+    const conn = tcpConnections.get(ip);
+    if (conn && !conn.initialized && conn.antennaCount > 0) {
+      console.log(`  Device ${ip} antenna list complete (${conn.antennaCount} antennas), emitting device_connected`);
+      conn.initialized = true;
+      // Broadcast to all clients, not just the connecting one
+      io.emit('device_connected', { ip, status: 'connected' });
     }
   }
   else if (message.includes('port')) {
@@ -268,17 +299,6 @@ udpServer.on('message', (msg, rinfo) => {
     console.log(`Discovered: ${device.name} (${device.ip})`);
     const isNew = !discoveredDevices.has(device.ip);
     discoveredDevices.set(device.ip, device);
-    
-    if (isNew && discoveredDevices.size === 1) {
-      console.log(`Auto-connecting to single discovered device: ${device.name}`);
-      setTimeout(() => {
-        io.sockets.emit('devices', Array.from(discoveredDevices.values()));
-        const firstSocket = Array.from(io.sockets.sockets.values())[0];
-        if (firstSocket) {
-          connectToDevice(device.ip, firstSocket);
-        }
-      }, 500);
-    }
     
     io.emit('device_discovered', device);
   }
