@@ -16,6 +16,7 @@ const TCP_PORT = 9007;
 
 let discoveredDevices = new Map();
 let tcpConnections = new Map();
+let deviceState = new Map();
 let sequenceNumber = 1;
 
 function getNextSeq() {
@@ -92,11 +93,16 @@ async function connectToDevice(ip, socket) {
       console.log(`  Existing connection destroyed, removing`);
       tcpConnections.delete(ip);
     } else if (conn.initialized) {
-      // Already initialized, send current state to new socket
       console.log(`  Device ${ip} already initialized, sending current state`);
       socket.emit('device_connected', { ip, status: 'connected' });
-      // Send antenna list (need to get it from discoveredDevices cache or re-fetch)
-      // For now, just let frontend handle the connected state
+      const state = deviceState.get(ip);
+      if (state && state.antennas) {
+        console.log(`  Sending ${state.antennas.length} cached antennas`);
+        state.antennas.forEach(ant => socket.emit('antenna_info', ant));
+      }
+      if (state && state.ports) {
+        Object.values(state.ports).forEach(port => socket.emit('port_status', port));
+      }
       return;
     } else {
       // Still initializing
@@ -151,6 +157,7 @@ function disconnectFromDevice(ip) {
   if (conn) {
     conn.client.destroy();
     tcpConnections.delete(ip);
+    deviceState.delete(ip);
     io.emit('device_disconnected', { ip });
   }
 }
@@ -203,14 +210,17 @@ function handleCommandResponse(ip, line, socket) {
     const antennaMatch = message.match(/antenna (\d+) name=([^\s]+) tx=([^\s]+) rx=([^\s]+)/);
     if (antennaMatch) {
       console.log(`  Parsed antenna: id=${antennaMatch[1]}, name=${antennaMatch[2]}`);
-      // Broadcast to all clients
-      io.emit('antenna_info', {
+      const antennaData = {
         ip,
         id: parseInt(antennaMatch[1]),
         name: antennaMatch[2].replace(/_/g, ' '),
         tx: antennaMatch[3],
         rx: antennaMatch[4]
-      });
+      };
+      io.emit('antenna_info', antennaData);
+      if (!deviceState.has(ip)) deviceState.set(ip, { antennas: [], ports: {} });
+      const state = deviceState.get(ip);
+      state.antennas.push(antennaData);
       const conn = tcpConnections.get(ip);
       if (conn) {
         conn.antennaCount = (conn.antennaCount || 0) + 1;
@@ -228,21 +238,25 @@ function handleCommandResponse(ip, line, socket) {
       io.emit('device_connected', { ip, status: 'connected' });
     }
   }
-  else if (message.includes('port')) {
-    const portMatch = message.match(/port (\d+) auto=(\d+) source=(\S+) band=(\d+) rxant=(\d+) txant=(\d+)/);
-    if (portMatch) {
-      socket.emit('port_status', {
-        ip,
-        portId: parseInt(portMatch[1]),
-        auto: portMatch[2] === '1',
-        source: portMatch[3],
-        band: parseInt(portMatch[4]),
-        rxant: parseInt(portMatch[5]),
-        txant: parseInt(portMatch[6])
-      });
-    }
-  }
-}
+   else if (message.includes('port')) {
+     const portMatch = message.match(/port (\d+) auto=(\d+) source=(\S+) band=(\d+) rxant=(\d+) txant=(\d+)/);
+     if (portMatch) {
+       const portData = {
+         ip,
+         portId: parseInt(portMatch[1]),
+         auto: portMatch[2] === '1',
+         source: portMatch[3],
+         band: parseInt(portMatch[4]),
+         rxant: parseInt(portMatch[5]),
+         txant: parseInt(portMatch[6])
+       };
+       socket.emit('port_status', portData);
+       if (!deviceState.has(ip)) deviceState.set(ip, { antennas: [], ports: {} });
+       const state = deviceState.get(ip);
+       state.ports[portData.portId] = portData;
+     }
+   }
+ }
 
 function handleStatusMessage(ip, line, socket) {
   const parts = line.split('|');
