@@ -1,0 +1,284 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+:root {
+  --bg-color-start: #0a0f1f;
+  --bg-color-end: #1d2a4a;
+  --text-primary: #e0e5f0;
+  --text-secondary: #8a99b8;
+  --text-highlight: #ffffff;
+  --panel-bg: rgba(30, 40, 60, 0.75);
+  --panel-border: rgba(63, 81, 120, 0.5);
+  --header-glow: rgba(50, 150, 255, 0.1);
+  --green: #28a745;
+  --red: #dc3545;
+  --button-bg: rgba(255, 255, 255, 0.1);
+  --button-hover-bg: rgba(255, 255, 255, 0.2);
+  --button-selected-bg: var(--green);
+  --glow-green: 0 0 12px 2px rgba(40, 167, 69, 0.7);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--text-primary);
+  background: #0D101C;
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, rgba(13, 16, 28, 0.9) 0%, rgba(13, 16, 28, 1) 70%), url(./images/background.png);
+    background-size: cover;
+    background-position: center bottom;
+    z-index: -1;
+}
+
+.app-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 30px;
+  position: relative;
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.app-header h1 {
+  font-size: 2.8rem;
+  font-weight: 500;
+  color: var(--text-highlight);
+  text-shadow: 0 0 10px var(--header-glow), 0 0 20px var(--header-glow);
+  margin: 0 40px;
+  white-space: nowrap;
+}
+
+.header-img {
+  height: 60px;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 10px var(--header-glow));
+}
+
+.header-img.left {
+    transform: scaleX(-1);
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto 30px auto;
+  padding: 0 20px;
+}
+
+.device-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 20px 25px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.device-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.device-name {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-highlight);
+}
+
+.device-info {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.device-connection {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-indicator::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-indicator.connected {
+  color: var(--green);
+}
+.status-indicator.connected::before {
+  background: var(--green);
+  box-shadow: var(--glow-green);
+}
+
+.status-indicator.disconnected {
+  color: var(--text-secondary);
+}
+.status-indicator.disconnected::before {
+  background: var(--text-secondary);
+}
+.status-indicator.connecting {
+    color: #f39c12;
+}
+.status-indicator.connecting::before {
+    background: #f39c12;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-disconnect {
+  background: var(--red);
+  color: white;
+}
+.btn-disconnect:hover {
+  background: #b82a37;
+}
+
+.btn-connect {
+  background: var(--button-bg);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+
+.radio-ports {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.radio-card {
+  background: rgba(10, 15, 30, 0.6);
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.radio-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.radio-antenna-name {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text-highlight);
+  margin-bottom: 4px;
+  height: 30px;
+}
+
+.radio-band {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  height: 16px;
+}
+
+.antenna-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.antenna-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid var(--panel-border);
+}
+.antenna-list .antenna-row:first-child {
+    border-top: 1px solid var(--panel-border);
+}
+
+.antenna-name {
+  flex-grow: 1;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.antenna-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-port {
+  width: 40px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: var(--button-bg);
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-port:hover {
+  background: var(--button-hover-bg);
+  color: var(--text-primary);
+}
+
+.btn-port.selected {
+  background: var(--button-selected-bg);
+  color: white;
+  border-color: var(--green);
+  box-shadow: var(--glow-green);
+}
+
+.no-devices-found {
+  text-align: center;
+  padding: 80px 30px;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.error-message {
+  background: rgba(220, 53, 69, 0.1);
+  color: var(--red);
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid var(--red);
+}

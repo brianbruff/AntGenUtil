@@ -3,229 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Antenna Genius Controller</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      color: #eee;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #4ecdc4;
-      font-size: 2.5rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .devices-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-      gap: 20px;
-    }
-
-    .device-card {
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 20px;
-      border: 1px solid rgba(255,255,255,0.1);
-      backdrop-filter: blur(10px);
-    }
-
-    .device-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .device-name {
-      font-size: 1.5rem;
-      color: #4ecdc4;
-    }
-
-    .device-info {
-      font-size: 0.85rem;
-      color: #aaa;
-      margin-bottom: 5px;
-    }
-
-    .status {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .status.disconnected {
-      background: #e74c3c;
-    }
-
-    .status.connected {
-      background: #2ecc71;
-    }
-
-    .status.connecting {
-      background: #f39c12;
-    }
-
-    .btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .btn-connect {
-      background: #4ecdc4;
-      color: #1a1a2e;
-    }
-
-    .btn-connect:hover {
-      background: #3dbdb5;
-      transform: translateY(-1px);
-    }
-
-    .btn-disconnect {
-      background: #e74c3c;
-      color: white;
-    }
-
-    .btn-disconnect:hover {
-      background: #c0392b;
-    }
-
-    .radio-ports {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .radio-port {
-      background: rgba(255,255,255,0.03);
-      border-radius: 8px;
-      padding: 15px;
-      text-align: center;
-    }
-
-    .radio-port h3 {
-      color: #4ecdc4;
-      margin-bottom: 10px;
-      font-size: 1.2rem;
-    }
-
-    .current-antenna {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #2ecc71;
-      margin-bottom: 5px;
-    }
-
-    .current-band {
-      font-size: 0.9rem;
-      color: #888;
-    }
-
-    .antenna-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .antenna-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255,255,255,0.03);
-      border-radius: 8px;
-      padding: 12px 15px;
-      transition: background 0.2s;
-    }
-
-    .antenna-item:hover {
-      background: rgba(255,255,255,0.05);
-    }
-
-    .antenna-name {
-      flex: 1;
-      font-weight: 500;
-    }
-
-    .antenna-buttons {
-      display: flex;
-      gap: 8px;
-    }
-
-    .antenna-btn {
-      padding: 8px 16px;
-      border: 2px solid transparent;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      background: rgba(255,255,255,0.1);
-      color: #888;
-    }
-
-    .antenna-btn:hover {
-      background: rgba(255,255,255,0.15);
-    }
-
-    .antenna-btn.selected-a {
-      background: #3498db;
-      color: white;
-      box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
-    }
-
-    .antenna-btn.selected-b {
-      background: #2ecc71;
-      color: white;
-      box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
-    }
-
-    .no-devices {
-      text-align: center;
-      padding: 60px 20px;
-      color: #888;
-      font-size: 1.2rem;
-    }
-
-    .error {
-      background: rgba(231, 76, 60, 0.2);
-      color: #e74c3c;
-      padding: 10px 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      font-size: 0.9rem;
-    }
-  </style>
+  <title>Antenna Genius</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>📡 Antenna Genius Controller</h1>
-    <div id="devices" class="devices-grid"></div>
-  </div>
+  <div class="background-overlay"></div>
+  <header class="app-header">
+    <img src="images/satellite-dish.png" alt="Satellite Dish" class="header-img left">
+    <h1>4O3A Antenna Genius</h1>
+    <img src="images/space-station.png" alt="Space Station" class="header-img right">
+  </header>
+
+  <main id="devices-container" class="container"></main>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -292,6 +81,7 @@
         } else {
           device.antennas.push({ id, name, tx, rx });
         }
+        device.antennas.sort((a, b) => a.id - b.id);
         renderDevices();
       }
     });
@@ -344,62 +134,69 @@
     }
 
     function renderDevices() {
-      const container = document.getElementById('devices');
+      const container = document.getElementById('devices-container');
       
       if (devices.size === 0) {
-        container.innerHTML = '<div class="no-devices">Searching for Antenna Genius devices...</div>';
+        container.innerHTML = '<div class="no-devices-found">Searching for Antenna Genius devices...</div>';
         return;
       }
 
       container.innerHTML = Array.from(devices.values()).map(device => {
         const antennas = Array.isArray(device.antennas) ? device.antennas : [];
-        const portA = device.portA || { rxant: 0, txant: 0, band: 0 };
-        const portB = device.portB || { rxant: 0, txant: 0, band: 0 };
+        const portA = device.portA || { rxant: 0, band: -1 };
+        const portB = device.portB || { rxant: 0, band: -1 };
 
         const getAntennaName = (id) => {
           const ant = antennas.find(a => a.id === id);
           return ant ? ant.name : 'None';
         };
 
+        const statusClass = device.connected ? 'connected' : 'disconnected';
+        const statusText = device.status || 'disconnected';
+
         return `
           <div class="device-card">
             <div class="device-header">
-              <div>
-                <div class="device-name">${device.name || 'Antenna Genius'}</div>
-                <div class="device-info">${device.ip} • v${device.version || '?.?.?'} • ${device.ports} ports, ${typeof device.antennas === 'number' ? device.antennas : antennas.length} antennas</div>
+              <div class="device-header-main">
+                <h2 class="device-name">${device.name || 'SwitchAroo'}</h2>
+                <div class="device-info">${device.ip} - v${device.version || '?'} • ${device.ports} ports, ${typeof device.antennas === 'number' ? device.antennas : antennas.length} antennas</div>
               </div>
-              <div>
-                <span class="status ${device.connected ? 'connected' : 'disconnected'}">${device.status || 'disconnected'}</span>
+              <div class="device-connection">
+                <span class="status-indicator ${statusClass}">${statusText}</span>
                 ${device.connected ? 
                   `<button class="btn btn-disconnect" onclick="disconnectDevice('${device.ip}')">Disconnect</button>` :
-                  `<button class="btn btn-connect" onclick="connectDevice('${device.ip}')">Connect</button>`
+                  `<button class="btn btn-connect" onclick="connectDevice('${device.ip}')" disabled>Connect</button>` // Connect is auto
                 }
               </div>
             </div>
 
-            ${device.error ? `<div class="error">Error: ${device.error}</div>` : ''}
+            ${device.error ? `<div class="error-message">Error: ${device.error}</div>` : ''}
 
             ${device.connected ? `
               <div class="radio-ports">
-                <div class="radio-port">
-                  <h3>Radio A</h3>
-                  <div class="current-antenna">${getAntennaName(portA.rxant)}</div>
-                  <div class="current-band">${getBandName(portA.band)}</div>
+                <div class="radio-card">
+                  <div class="radio-title">Radio A</div>
+                  <div class="radio-antenna-name">${getAntennaName(portA.rxant)}</div>
+                  <div class="radio-band">${getBandName(portA.band)}</div>
                 </div>
-                <div class="radio-port">
-                  <h3>Radio B</h3>
-                  <div class="current-antenna">${getAntennaName(portB.rxant)}</div>
-                  <div class="current-band">${getBandName(portB.band)}</div>
+                <div class="radio-card">
+                  <div class="radio-title">Radio B</div>
+                  <div class="radio-antenna-name">${getAntennaName(portB.rxant)}</div>
+                  <div class="radio-band">${getBandName(portB.band)}</div>
                 </div>
               </div>
 
               <div class="antenna-list">
                 ${antennas.map(ant => `
-                  <div class="antenna-item">
+                  <div class="antenna-row">
                     <span class="antenna-name">${ant.name}</span>
                     <div class="antenna-buttons">
-                      <button class="antenna-btn ${portA.rxant === ant.id ? 'selected-a' : ''}" onclick="selectAntenna('${device.ip}', 1, ${ant.id})">A</button>
-                      <button class="antenna-btn ${portB.rxant === ant.id ? 'selected-b' : ''}" onclick="selectAntenna('${device.ip}', 2, ${ant.id})">B</button>
+                      <button 
+                        class="btn-port ${portA.rxant === ant.id ? 'selected' : ''}" 
+                        onclick="selectAntenna('${device.ip}', 1, ${ant.id})">A</button>
+                      <button 
+                        class="btn-port ${portB.rxant === ant.id ? 'selected' : ''}"
+                        onclick="selectAntenna('${device.ip}', 2, ${ant.id})">B</button>
                     </div>
                   </div>
                 `).join('')}
@@ -410,6 +207,7 @@
       }).join('');
     }
 
+    // Initial render
     renderDevices();
   </script>
 </body>
