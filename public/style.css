@@ -26,19 +26,20 @@
 body {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: var(--text-primary);
-  background: #0D101C;
+  background: transparent;
   min-height: 100vh;
   overflow: hidden;
   position: relative;
 }
 
-.background-overlay {
+body::before {
+    content: '';
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(ellipse at bottom, rgba(13, 16, 28, 0.9) 0%, rgba(13, 16, 28, 1) 70%), url(./images/background.png);
+    background: radial-gradient(ellipse at bottom, rgba(13, 16, 28, 0.6) 0%, rgba(13, 16, 28, 0.9) 70%), url(./images/background.png);
     background-size: cover;
     background-position: center bottom;
     z-index: -1;
